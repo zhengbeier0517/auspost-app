@@ -1,7 +1,5 @@
 node_modules/
 dist/
-.env*
-!.env.example
 .DS_Store
 # Supplied documents contain test credentials; keep local only.
 docs/courier_testing_account.pdf
