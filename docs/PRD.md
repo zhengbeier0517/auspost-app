@@ -1,380 +1,182 @@
-# 订单详情、物流追踪与运费估算 PRD
+# ParcelDesk — Product Requirements
 
-- 项目：auspost-app
-- 文档版本：1.0
-- 整理日期：2026-09-23
-- 状态：需求整理完成，尚未代表功能已实现或外部 API 已验证。
+Version 2.0 · 23 September 2026
 
-## 1. 依据与适用口径
+## 1. Scope and source priority
 
-| 来源 | 用途 |
+Build an English-language order operations application with a product catalog, per-order financial calculations, shipment tracking, and a one-command Docker Compose deployment.
+
+The latest user instruction supersedes the original assessment fixtures: **all supplied product data comes from [db-data.json](db-data.json); missing order, customer, quantity and shipment-association data is generated in [test-data.json](test-data.json).** Do not fabricate additional catalog records or prices. Do not use the original assessment's unmatched SKU list as the application's order input.
+
+Reference documents:
+
+- `2026-06-IT-Interview-in-person.pdf`: original functional assessment.
+- `courier_testing_account.pdf`: testbed credentials and carrier descriptions, retained locally.
+- `IT_Coding_Assessment_Brief_Draft.html`: clarification of GST, Node.js support, frontend requirements and optional TNT integration, retained locally.
+
+These documents are reference material. The latest user request governs data and language decisions. The screenshot path supplied by the user was unavailable, so the current visual design is an independent implementation pending an accessible reference image.
+
+## 2. Data contracts
+
+### Product source
+
+`docs/db-data.json` contains a query result object with `table: "product_list"`, `rows`, `rowCount`, `limit`, `where` and `select`. Read the ten records from `rows`. Preserve the source file unchanged. No external SQL site, Excel file or database is required.
+
+| Field | Use |
 | --- | --- |
-| [面试题 PDF](2026-06-IT-Interview-in-person.pdf) | 订单、商品行、计算、物流和交付要求的主要依据（第 1–4 页） |
-| [物流测试账号 PDF](courier_testing_account.pdf) | Australia Post / StarTrack 测试环境、产品账号以及 TNT 接入说明（第 1–2 页） |
-| [补充说明 HTML](IT_Coding_Assessment_Brief_Draft.html) | 解决原题歧义，补充税价、前端、技术栈、异常处理和交付说明；原文件标记为草稿 |
-| [数据库原始数据](db-data.json) | 本项目唯一的商品原始数据来源 |
-| 当前项目目录与依赖 | 实施目录及技术栈依据 |
+| SKU | Exact product lookup key, trimmed; duplicate keys are invalid |
+| ProductName, Description | Product title and descriptive text |
+| RRP | AUD unit price including GST, supplied as a decimal string |
+| DosageType | Product category and neutral illustration type |
+| length, width, height | Dimensions including unit suffixes |
+| weight | Weight with a g suffix |
+| volume | Volume with an mm³ suffix |
+| Volumetric_GrossWeight | Separate kg-based source field with unconfirmed business meaning |
+| Status, Date | Product record metadata, not order or tracking status |
 
-用户约定优先：材料中提到的 SQL 查询结果、SKU Excel、SKU 文件或数据库原始数据，统一指向 `docs/db-data.json`。无需访问原 SQL 网站或另找 Excel，也不要求建立外部数据库。订单头、订单行和运单映射取自题目，不能误认为它们已包含在商品 JSON 内。
+Other source fields remain intact. Never infer shipment weight from the product name or treat g as kg. Do not treat `ETA: "nullDays"` as a real delivery estimate.
 
-### 1.1 差异及处理决定
+### Generated fixtures
 
-| 问题 | 材料差异 | 本项目口径 |
-| --- | --- | --- |
-| 第二个订单号 | PDF 订单头为 `PO-20251202-00046`，商品行及 HTML 为 `PO-20251203-00046` | 统一为 `PO-20251203-00046`，保留此纠错记录；日期为 03/12/25 |
-| GST 计算 | PDF 说明价格已含 GST，却又要求对该小计加 10% | 按 HTML 第 4 节澄清：RRP 含税，先除以 1.10 得到未税价，再计算未税小计和 GST，避免重复计税 |
-| 后端技术 | PDF 列出 Python / Java / Go；HTML 另允许 Node.js | 沿用已有 Node.js + Express，不更换项目结构 |
-| 输出形式 | PDF 允许控制台、网页或 JSON；HTML 要求完整前端 | 提供 React 前端及后端服务；控制台或 JSON 仅作辅助 |
-| TNT 范围 | PDF 要求按承运商调用 API；HTML 明确 TNT 为加分项 | Australia Post / StarTrack 为基础接入范围；TNT 可选，未实现时明确显示状态 |
-| 商品数据来源 | PDF 提及 SQL 网站与 SKU Excel | 全部统一为本地 `docs/db-data.json` |
-| 商品匹配缺口 | 题目 9 个 SKU 均不在当前 JSON 的 10 条记录中 | 如实显示缺失，不能替换 SKU、编造价格或给出完整订单总额；另用现有商品建立标明用途的测试订单验证正常计算 |
+`docs/test-data.json` contains `description`, `originPostcode` and `orders`.
 
-下文的输入字段命名、接口路径、舍入规则和错误状态是为实现而制定的项目设计约定，并非原题指定协议；应在交付 README 中同步说明。
+Each order contains `orderNo`, `orderDate`, `status`, `isTestData`, `customer`, `shippingAddress`, `items` and `shipments`. Each line references a real catalog `sku`, a positive integer `quantity` and a `trackingId`. Each shipment contains `trackingId`, `trackingNumber` and `carrier`.
 
-## 2. 产品目标与范围
+Generated customer names and addresses are fictional. Email addresses use `example.com`. Tracking identifiers are taken from the supplied assessment testing material; their association with generated orders is synthetic. A testbed response is not evidence of a real delivery.
 
-面向查看澳大利亚客户订单的业务人员，提供独立订单详情、商品匹配、金额计算、运单状态和可选运费估算。每个订单独立处理，不合并不同收件人的订单。
+| Generated order | Product lines | Units | Order state |
+| --- | ---: | ---: | --- |
+| TEST-20260923-001 | 3 | 5 | In Transit |
+| TEST-20260923-002 | 4 | 6 | Processing |
+| TEST-20260923-003 | 3 | 6 | Completed |
 
-### 2.1 必须完成
+Together the fixtures exercise all ten catalog products. Do not duplicate catalog names or prices in the fixture file. Adding another valid order must not require modifying application logic.
 
-1. 读取题目订单数据及本地商品 JSON，通过 SKU 匹配商品。
-2. 展示两笔订单的订单头、收件信息、商品行及图片占位。
-3. 数据充分时按订单计算未税小计、GST、运费和总额；数据缺失时明确说明不可计算。
-4. 后端按承运商查询 Australia Post / StarTrack 物流，并正确处理无结果、错误和缺少配置。
-5. 对 TNT 展示真实查询结果或明确的未实现 / 不可用状态。
-6. 考虑运费计算流程并记录方案；未实现估算时展示 `A$0.00` 及原因。
-7. 提供中文 README，说明启动、依赖、数据、假设、问题及降级行为。
+## 3. Required functionality
 
-### 2.2 可选加分项
+### Order list
 
-- 根据重量、体积、起止邮编计算运费估算，或使用承运商报价 API。
-- 接入 TNT 追踪及 RTT 报价。
-- 增加明确标为测试数据的订单，验证正常和异常流程。
+- Display order number, date, customer, company, input status, item count and total.
+- Search by order number, customer or company.
+- Filter by All orders, In Transit, Processing and Completed.
+- Show workspace counts derived from loaded data.
+- Open a selected order and return to the list.
+- Provide loading, empty, error and retry states.
 
-### 2.3 本次不要求
+### Order details
 
-订单创建与支付、实际下单发货、打印面单、用户登录及权限、库存管理、生产数据库部署、真实商品图片采集。运费为估算，不构成实际运输报价承诺。
+- Show order header, date, input order status and a visible test-data disclosure.
+- Show each SKU's catalog title, image placeholder, quantity, RRP including GST, unit price excluding GST and line subtotal excluding GST.
+- Show the associated shipment group per item.
+- Show recipient, company, contact information and shipping address.
+- Show separate shipment cards for each carrier/tracking identifier.
+- Show subtotal, GST, shipping and total in AUD.
+- Export the selected order and currently loaded tracking result as JSON without secrets.
 
-## 3. 输入订单及运单关系
+### Catalog
 
-### 3.1 订单头
+- Show all supplied products with title, SKU, description, RRP, source dimensions and weight.
+- Search by name or SKU.
+- Use labelled neutral illustrations, not real product photography.
 
-| 字段 | 订单 1 | 订单 2 |
-| --- | --- | --- |
-| 订单号 | PO-20251130-00072 | PO-20251203-00046 |
-| 订单日期 | 30/11/25（2025-11-30） | 03/12/25（2025-12-03） |
-| 订单状态 | Completed | In Transit |
-| 公司 | V22 Dispensary | Cann Life Dispensary |
-| 客户 | Jason Hu | Bella Dari |
-| 电话 | 0481 735 488 | 0411 547 288 |
-| 邮箱 | Jason@aerishealth.au | Bella@aerishealth.au |
-| 地址 | 125 Toorak Road, South Yarra VIC 3141 | 381 Smith Street, Fitzroy VIC 3065 |
-| 目的邮编 | 3141 | 3065 |
+## 4. Financial rules
 
-订单状态来自输入订单，不等同于承运商实时返回的物流状态，不应互相覆盖。电话、邮编、运单号及账号以字符串存储，保留前导零。
-
-### 3.2 商品行
-
-| 订单号 | SKU | 数量 | 运单分组 |
-| --- | --- | ---: | --- |
-| PO-20251130-00072 | TBAMET10 | 3 | Track 1 |
-| PO-20251130-00072 | TBAMET28 | 1 | Track 1 |
-| PO-20251130-00072 | TBOPAL28 | 1 | Track 1 |
-| PO-20251130-00072 | HARNIG | 4 | Track 1 |
-| PO-20251130-00072 | LELCBD100 | 6 | Track 1 |
-| PO-20251203-00046 | AURPUR10 | 10 | Track 2 |
-| PO-20251203-00046 | HALGEO15 | 1 | Track 3 |
-| PO-20251203-00046 | MCMW10 | 2 | Track 3 |
-| PO-20251203-00046 | MCBO30 | 3 | Track 3 |
-
-订单 1 为 5 行、15 件，订单 2 为 4 行、16 件。这些数值仅作验收基准，运行时须从订单行计算。
-
-### 3.3 运单映射
-
-| 分组 | 运单号 | 承运商 | 所属订单 |
-| --- | --- | --- | --- |
-| Track 1 | 2FWZ50008569 | StarTrack / Australia Post | PO-20251130-00072 |
-| Track 2 | 2FWZ50008645 | StarTrack / Australia Post | PO-20251203-00046 |
-| Track 3 | 305506914 | TNT | PO-20251203-00046 |
-
-同一订单同一运单只查询和展示一份物流信息，商品行保留分组关系。订单 2 必须分别展示 Track 2、Track 3，不能用其中一个结果覆盖整单物流。
-
-HTML FAQ 补充测试号码：`RBXZ50016112`、`2FWZ50020500`、`2FWZ50020498`、`2FWZ50020475`。它们仅用于独立联调，不自动加入原订单，也不保证当前仍有有效测试响应。
-
-## 4. 商品数据与数据质量
-
-### 4.1 原始结构
-
-`docs/db-data.json` 是查询结果对象，不是直接的商品数组：
+RRP includes GST. This resolves the original PDF's conflicting instruction to add GST to an already tax-inclusive subtotal.
 
 ```text
-{
-  table: "product_list",
-  limit: 10,
-  where: null,
-  select: [26 个字段名],
-  rowCount: 10,
-  rows: [10 条商品记录]
-}
+Ex-GST unit price = RRP / 1.10
+Ex-GST line subtotal = round(RRP × quantity / 1.10, 2)
+Order subtotal = sum(rounded ex-GST line subtotals)
+GST = round(order subtotal × 10%, 2)
+Total = subtotal + GST + shipment fee
 ```
 
-读取 `rows` 建立 SKU 索引；`table`、`limit`、`where`、`select` 和 `rowCount` 为来源元信息。不能据此假设已拿到全量商品表。保持原始文件不变，解析、清洗及派生字段在应用内部完成。
+Parse prices into integer cents. Calculate with BigInt rational arithmetic and round half-up. The displayed unit price is rounded for presentation; it is not reused to calculate the line subtotal. Line-level rounding can create a cent-level difference from a separately summed tax-inclusive total; this convention is explicit.
 
-### 4.2 字段映射
+Reject negative, nonfinite, malformed or over-precision prices. Quantity must be a positive safe integer. Missing/duplicate SKU records and invalid quantities or prices produce item-level errors and an `incomplete` financial state with `null` subtotal, GST and total. Never silently substitute zero prices.
 
-| 原始字段 | 用途与处理 |
-| --- | --- |
-| `SKU` | 商品匹配主键；去除首尾空白后精确匹配，不做相似名称替换；重复 SKU 报数据歧义 |
-| `ProductName`、`Description` | 商品名称及描述；可清理首尾空白并保留有意义的换行 |
-| `RRP` | AUD 含税单价；原值为字符串，须严格解析为有限且非负的十进制金额 |
-| `length`、`width`、`height` | 带 `mm` 单位的尺寸字符串；显式解析并统一单位 |
-| `volume` | 带 `mm³` 单位的体积；缺失时可由有效长宽高相乘推导 |
-| `weight` | 带 `g` 单位的重量，不可直接视为 kg |
-| `Volumetric_GrossWeight` | 带 `kg` 单位的独立字段；具体业务含义未澄清，不可直接覆盖实际重量 |
-| `Status`、`Date` | 商品状态及记录日期；不能当作订单或物流状态、物流更新时间 |
-| 其他字段 | 保留原始数据，不作为本期必需展示项 |
+## 5. Shipping
 
-其他字段包括 `SPU`、`Barcode`、`DosageType`、`ProductType`、`Size`、`Schedule`、`MaxStoragePerContainer`、`TGACategory`、`RouteOfAdministration`、`PlantSpecies`、`Spectrum`、`StrainLineage`、`WarningThreshold`、`ETA`。
+The required baseline displays `A$0.00` with `not_estimated` and an explanation that it is a placeholder, not free delivery. No actual carrier quotation is claimed.
 
-### 4.3 当前商品清单
+Origin is `2111`, as specified in the assessment. Destination comes from the generated address. A future estimate must explicitly define packing, weight, volume, unit conversion and tax assumptions. The source's `weight` and `Volumetric_GrossWeight` fields have different meanings/units and must not be substituted for each other without clarification.
 
-| SKU | RRP（AUD，含 GST） |
-| --- | ---: |
-| WL-PAS-ZSMPIN-30-30-1 | 175.00 |
-| WL-PAS-ZSMPST-30-30-1 | 175.00 |
-| NUBKIKP10 | 120.00 |
-| GROOGKU10 | 150.00 |
-| GROSTRC10 | 130.00 |
-| GROWAFB10 | 99.00 |
-| WLFLO015 | 99.00 |
-| ENCBGBS30 | 180.00 |
-| FLW0013 | 129.00 |
-| FLW0012 | 129.00 |
+An optional estimate would be calculated once per order/shipment group and summed to the order. A failed or unimplemented TNT estimate must not erase another group's valid estimate.
 
-本表是数据快照，业务逻辑仍须实时读取文件，不能把表中价格写死。
+## 6. Tracking integration
 
-### 4.4 缺失及异常处理
+Australia Post / StarTrack tracking is requested by the backend only, using the official testbed `/track?tracking_ids=...` endpoint, Basic authentication, and the `Account-Number` header. Credentials reside in root `.env` and are never returned to the client. The official host and testbed path are enforced before sending credentials; redirects are rejected.
 
-- 题目中的 9 个 SKU 当前全部未匹配：保留订单行、数量、运单及图片占位，名称显示“未找到商品”，单价及行金额显示“—”。
-- 只要有未匹配 SKU、非法价格或非法数量，整单金额状态为 `incomplete`；未税小计、GST、总额显示“无法完整计算”，不能把缺失项按零价处理。
-- 运费可独立展示：未估算时显示 `A$0.00` 和“未估算”，但不能据此宣称整单金额完整。
-- 数量必须为正整数；零、负数、非数值和小数均判为无效，不静默截断。
-- 商品匹配失败不影响订单头和已有物流信息展示；原始文件无法读取或 JSON 结构无效时，显示可理解的数据加载错误。
-- 存在 `SPU: ""`、`ETA: "nullDays"`、尾部空白及换行等情况；空值和占位文本不作为有效业务值。
-- `weight` 和 `Volumetric_GrossWeight` 的数值及单位明显不同。只做明确的单位转换，不能猜测修正。计费重量含义未确定时，运费采用未估算降级或记录清楚的估算假设。
+- StarTrack uses its separate configured account, preserving the supplied leading zero.
+- Per-shipment requests prevent mixed-carrier queries.
+- A response must match the requested tracking identifier.
+- Normalize status, events, event location and event timestamps.
+- Sort dated events newest first and distinguish event time from query time.
+- Use a ten-second timeout, a sixty-second cache, concurrent-request deduplication and a maximum of ten outbound requests per minute.
+- HTTP errors, no results, invalid responses, missing configuration and network failures are explicit states, never fictional tracking events.
+- TNT remains an optional integration. Show `not_implemented` and explain that shipping is not estimated.
+- Input order status and carrier status remain independent.
 
-## 5. 金额计算规则
+Unified results include `carrier`, `trackingNumber`, `trackingId`, `availability`, `status`, `events`, `lastUpdated`, `queriedAt`, `environment`, `message` and cache information. Availability is `available`, `unavailable`, `not_implemented` or `not_configured`.
 
-以下为本题业务口径，不推断商品在真实交易中的税务分类。所有货币为 AUD，展示两位小数并明确标注含税 / 未税。
+## 7. Technical structure
 
-```text
-未税单价 = RRP / 1.10
-未税行小计 = 未税单价 × 数量
-订单未税小计 = 本订单全部未税行小计之和
-GST = 订单未税小计 × 10%
-订单总额 = 订单未税小计 + GST + Shipment Fee
-```
-
-采用十进制运算或等效精确金额策略，避免二进制浮点误差。项目舍入约定：未税单价保留内部精度用于计算；每行未税金额按四舍五入保留两位后求和；GST 基于该小计计算并四舍五入至两位；总额相加得到。页面显示的未税单价仅为两位近似值，不用显示值反算行金额。税额拆分与含税原价累计可能存在分位差异，此规则须在 README 说明，不暗中引入调整项。
-
-`Shipment Fee` 按最终纳入总额的金额处理，不再次自动加收 10% GST；如报价 API 返回未税运费，适配层必须根据已确认的报价语义转换并记录口径。来源不明时不猜测税额。
-
-正常计算验收例（新增测试订单，非原题订单）：从当前 JSON 读取 `GROWAFB10`、数量 2，未估算运费时应为含税单价 `A$99.00`、未税单价 `A$90.00`、未税小计 `A$180.00`、GST `A$18.00`、运费 `A$0.00`、总额 `A$198.00`。此例用于测试，不能硬编码到计算逻辑。
-
-## 6. 页面与交互要求
-
-采用现有 React 前端。可用订单选择列表与详情区域，或分别展示订单卡片；原题示例仅作参考，不要求复刻。
-
-| 区域 | 必须展示 |
-| --- | --- |
-| 订单入口 | 两笔原始订单及可区分的测试订单；切换后所有区域属于同一订单 |
-| 订单头 | 订单号、日期、输入订单状态 |
-| 收件信息 | 公司、姓名、电话、邮箱、完整地址 |
-| 商品明细 | SKU、名称 / 描述、数量、含税 RRP、未税单价、未税行小计、图片或中性占位图、关联运单 |
-| 物流区域 | 承运商、运单号、API 返回的当前状态及最后更新时间；存在事件列表时可展示 |
-| 金额汇总 | Subtotal (ex GST)、GST (10%)、Shipment Fee、Total |
-| 提示区域 | 商品缺失、金额不完整、物流不可用、TNT 未实现、运费未估算等实际状态 |
-
-- 首次加载、加载失败、空数据和重试均有明确反馈。
-- 图片可用 Product 1、Product 2 等占位或中性瓶子图标，不要求真实图片；提供可理解的替代文本。
-- 物流请求失败仅影响对应运单区域，不清空订单或让整页崩溃。
-- 区分承运商事件时间与本次查询时间；没有事件时间则显示未提供，不伪造“最新更新”。
-- 基本适配桌面和窄屏，表格可横向滚动，金额及错误说明不被遮挡。
-- 状态不能仅靠颜色区分，交互控件可用键盘操作。
-
-## 7. 物流测试环境与接入要求
-
-### 7.1 Australia Post / StarTrack
-
-以下为账号 PDF 提供的参考配置，本次整理未调用远端接口验证有效性。
-
-| 配置 | 内容 |
-| --- | --- |
-| Testbed Base URL | `https://digitalapi.auspost.com.au/test/shipping/v1/` |
-| 材料中的接口示例 | `https://digitalapi.auspost.com.au/test/shipping/v1/shipments` |
-| 官方指引 | <https://developers.auspost.com.au/apis/shipping-and-tracking/getting-started> |
-| Australia Post Domestic and International | 账号 `2004456017` |
-| Same Day Services | 账号 `3004456017` |
-| StarTrack Express and Premium | 账号 `04456017`（保留前导零） |
-
-API Key 和 Password 从账号 PDF 第 1 页读取并仅配置于服务端环境变量，PRD 不重复明文。建议变量名：`AUSPOST_BASE_URL`、`AUSPOST_API_KEY`、`AUSPOST_API_PASSWORD`、`AUSPOST_ACCOUNT_NUMBER`；按所用产品选择相应账号。
-
-`/shipments` 只是材料中的路径示例，不代表已经确认的追踪接口。实现时须根据官方接口文档核实追踪路径、认证方式、账号请求头、参数及响应结构。测试凭据不代表给定运单一定能查询到结果。
-
-### 7.2 TNT
-
-- RTT（Rated Transit Times）以 XML 请求和响应提供可用服务、价格及运输时效，输入涉及起点、终点、件数、重量和尺寸；它与运单追踪用途不同。
-- Consignment Tracking 的 Weblinking 支持运单号或 Sender's Reference。
-- 账号 PDF 第 2 页提供两套凭据：Secured Weblinking 用户名 / 密码，以及 Domestic UAT 用户名 / 密码 / 账号。两者不得混用；UAT 账号为 `30023444`，仅测试环境使用。
-- 建议变量名：`TNT_WEBLINK_USERNAME`、`TNT_WEBLINK_PASSWORD`、`TNT_UAT_USERNAME`、`TNT_UAT_PASSWORD`、`TNT_UAT_ACCOUNT_NUMBER`。凭据值从原 PDF 配置，不写入前端或 PRD。
-- PDF 提及技术规范附件，但当前 `docs/` 没有独立 TNT 规范文件或明确接口地址，因此请求协议、端点和认证细节尚需实现时核实。
-- 未实现或服务不可用时，TNT 追踪显示“未实现”或“暂不可用”，其关联运费为 `A$0.00` 并注明原因。
-
-### 7.3 统一结果及异常行为
-
-后端将不同承运商结果转换为统一结构，至少含 `carrier`、`trackingNumber`、`availability`、`status`、`lastUpdated`，事件列表可选。`availability` 区分 `available`、`unavailable`、`not_implemented`、`not_configured`；错误原因与真实物流状态分别存储。
-
-网络超时、鉴权失败、运单无结果、限流、非预期返回及响应解析失败均须有明确降级状态。设有限请求超时，不无限重试。可提供手动重试，具体超时、缓存和重试参数在实现时记录。缓存结果须标明获取时间。模拟响应仅用于标记清楚的测试，不能冒充实时结果。
-
-所有凭据仅在服务端使用，不通过响应、日志或前端构建内容泄露。`.env` 应忽略提交，`.env.example` 仅列变量名及空值。两份原始参考材料中含有测试凭据，交付公开 GitHub 仓库时须排除含凭据的 PDF / HTML，或提供脱敏副本；仅忽略 `.env` 不足以防止这些材料泄露。
-
-## 8. 运费估算
-
-起始邮编为 `2111`（材料标注 Ryde, NSW），目的邮编取对应订单地址：订单 1 为 `3141`，订单 2 为 `3065`。
-
-基础版本展示 `A$0.00` 并标记“未估算”，README 仍需说明输入、可能的计算方法以及未实现原因。零值降级不表示免费配送。
-
-如实现加分项：
-
-1. 匹配 SKU，解析尺寸 / 重量并乘以数量；例如 mm 转 cm 除以 10，g 转 kg 除以 1000，mm³ 转 m³ 除以 1,000,000,000。
-2. 明确包裹装箱假设、计费重量来源、体积重规则、费率来源和货币 / 税价语义；不能默认逐件长宽高相加就是包裹尺寸。
-3. 按“订单 + 运单”分组估算，再将每组运费只计一次汇总到订单。该方式为本项目的多运单聚合约定。
-4. 可调用报价接口，或采用注明为假设的简单重量 / 体积公式；不能将假设费率描述为承运商官方报价。
-5. 缺失商品或有效尺寸 / 重量、邮编无效、报价失败时，该分组降级为 `A$0.00` 并附原因。
-6. 部分分组成功、部分降级时，订单运费展示已有估算之和，同时标明“部分估算”。TNT 为零不应抹掉同订单 Australia Post 分组的有效估算。
-
-## 9. 数据流与建议接口
-
-### 9.1 数据流
-
-```text
-题目订单输入 + docs/db-data.json
-  → backend/db 读取与校验
-  → backend/services 按 SKU 匹配、计算金额、按运单调用承运商
-  → backend/controllers / routes 返回结果
-  → frontend 展示订单、商品、金额、物流和异常状态
-```
-
-订单输入建议使用 `orders` 数组，各订单含 `orderNo`、`orderDate`、`status`、`customer`、`shippingAddress`、`items`、`shipments`；商品行含 `sku`、`quantity`、`trackingId`，运单含 `trackingId`、`carrier`、`trackingNumber`。题目订单作为数据文件放在现有 `backend/db/` 下，具体文件名由实现决定，禁止嵌入计算函数。商品仍读取 `docs/db-data.json`，不维护另一份可能失真的商品副本。
-
-### 9.2 建议接口契约（待实现）
-
-| 接口 | 职责 |
-| --- | --- |
-| `GET /api/orders` | 返回订单摘要及数据完整性状态 |
-| `GET /api/orders/:orderNo` | 返回订单头、收件信息、匹配商品行、运单映射、金额及原因说明 |
-| `GET /api/orders/:orderNo/tracking` | 按运单返回独立的追踪结果和可用性状态 |
-
-订单金额建议包含 `currency: "AUD"`、`calculationStatus`、`subtotalExGst`、`gst`、`shipmentFee`、`total`。不可计算的金额使用 `null`，不要使用 `0` 冒充已计算金额。未估算运费可为 `0`，同时必须携带估算状态及原因。错误详情不返回凭据或完整敏感上游请求。
-
-不存在的订单返回 404；基础数据加载失败返回可理解的服务错误；某个商品或物流失败通过对应结果状态表达，允许页面继续展示有效内容。
-
-## 10. 沿用当前目录结构
-
-以下为整理时实际存在的目录树，省略 `.git/`、`node_modules/` 等内部及依赖目录。不新建平行的 `server/`、`client/` 或另一套项目根目录；新增实现文件放入已有目录。
+Use the pre-existing React/Vite frontend and Node.js/Express backend directories.
 
 ```text
 auspost-app/
-├── .gitignore
-├── package.json
+├── .env                     # local configuration; ignored by Git
+├── .env.example             # blank variable names
+├── .dockerignore
 ├── compose.yaml
+├── package.json
+├── README.md
 ├── backend/
-│   ├── Dockerfile
 │   ├── app.js
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── controllers/
-│   ├── db/
-│   ├── middlewares/
-│   ├── routes/
-│   ├── services/
-│   └── utils/
+│   ├── Dockerfile
+│   ├── package.json / package-lock.json
+│   ├── controllers/         # request handlers
+│   ├── db/                  # source-data loading
+│   ├── middlewares/         # safe error handling
+│   ├── routes/              # HTTP routes
+│   ├── services/            # order calculations and tracking; tests
+│   └── utils/               # exact money operations
 ├── docs/
-│   ├── 2026-06-IT-Interview-in-person.pdf
-│   ├── courier_testing_account.pdf
-│   ├── IT_Coding_Assessment_Brief_Draft.html
-│   ├── db-data.json
-│   └── PRD.md
+│   ├── db-data.json         # unchanged product source
+│   ├── test-data.json       # generated fixtures
+│   ├── PRD.md
+│   └── original references  # credential-bearing files kept local
 └── frontend/
-    ├── .gitignore
     ├── Dockerfile
-    ├── README.md
-    ├── package.json
-    ├── package-lock.json
-    ├── eslint.config.js
-    ├── index.html
-    ├── vite.config.js
-    ├── components/
+    ├── nginx.conf
+    ├── components/          # existing directory outside src
     └── src/
-        ├── App.jsx
-        ├── App.css
-        ├── main.jsx
-        ├── index.css
+        ├── App.jsx / App.css / index.css / main.jsx
         ├── pages/
         └── utils/
 ```
 
-| 现有位置 | 规划职责 |
+API:
+
+| Route | Result |
 | --- | --- |
-| `backend/app.js` | Express 服务入口与统一中间件装配 |
-| `backend/routes/` | 路由定义 |
-| `backend/controllers/` | 参数处理及响应组织 |
-| `backend/services/` | 订单匹配、金额与运费计算、承运商适配 |
-| `backend/db/` | 数据读取及题目订单输入；商品原始数据仍引用 `docs/db-data.json` |
-| `backend/middlewares/` | 通用请求处理、错误处理中间件 |
-| `backend/utils/` | 金额、日期和单位解析等工具 |
-| `frontend/src/pages/` | 订单页面 |
-| `frontend/components/` | 复用组件；该目录实际在 `src/` 外，沿用此位置 |
-| `frontend/src/utils/` | 接口调用和展示格式化 |
-| `docs/` | 原始参考资料、数据与 PRD |
-| `compose.yaml`、两端 `Dockerfile` | 沿用部署入口；如实现容器启动，再补齐配置并验证 |
+| GET /api/health | Service availability |
+| GET /api/orders | Calculated orders and origin postcode |
+| GET /api/orders/:orderNo | One order or 404 |
+| GET /api/orders/:orderNo/tracking | Independent shipment results or 404 |
+| GET /api/products | Source catalog records |
 
-已有依赖确定采用 React + Vite、Node.js + Express。当前 `compose.yaml` 为空，现有结构不代表启动、容器化或业务能力已经可用。本次仅整理 PRD，不更改依赖或应用代码。
+Nginx serves the built frontend and proxies `/api/` to the backend. Only the frontend is published to `127.0.0.1`, default port 8080. Health checks gate frontend startup on backend readiness. Docker builds copy only the two data files, never credentials or reference documents.
 
-## 11. 验收清单
+## 8. Acceptance
 
-| 编号 | 场景 | 验收标准 |
-| --- | --- | --- |
-| AC-01 | 原始订单展示 | 两笔订单头正确，订单 2 使用纠正后的号码；共 9 行、31 件，各自独立 |
-| AC-02 | 数据来源 | 商品从 `docs/db-data.json.rows` 读取，不访问 SQL 网站，不硬编码商品价格或结果 |
-| AC-03 | 当前数据缺口 | 9 个 SKU 均显示未匹配；不伪造名称价格；两单金额为不完整状态 |
-| AC-04 | 正常金额计算 | 使用 `GROWAFB10 × 2` 的独立测试订单得出 180.00 未税小计、18.00 GST、198.00 总额（运费 0） |
-| AC-05 | 精度 | 对 RRP 除以 1.10 产生循环小数的商品，遵循第 5 节舍入规则，显示汇总可对账 |
-| AC-06 | 输入校验 | 非法数量、价格、重复 SKU 及格式错误均明确报错，不静默丢行或按零价处理 |
-| AC-07 | 运单归属 | 订单 1 一个运单，订单 2 两个运单；相同运单不按每件商品重复计费 |
-| AC-08 | 物流成功 | 在接口确有返回时展示对应承运商状态及事件更新时间，区分输入订单状态 |
-| AC-09 | 物流失败 | 超时、鉴权失败、无结果和解析失败仅影响相应运单；可重试且不伪造结果 |
-| AC-10 | TNT 降级 | 未实现时标记未实现；失败时标记不可用；相关运费为 0 并注明原因 |
-| AC-11 | 运费基础方案 | 每单始终展示运费，未估算为 `A$0.00`，README 解释方案 |
-| AC-12 | 可选运费方案 | 若实现，校验单位、数量、起止邮编、多运单汇总及部分估算提示 |
-| AC-13 | 图片和页面 | 每行都有图片区域 / 占位；窄屏可读，加载和错误状态明确 |
-| AC-14 | 凭据 | 浏览器、接口响应、日志和交付仓库不包含凭据；示例环境配置无真实值 |
-| AC-15 | 可运行性 | 按最终中文 README 可安装和启动；使用现有目录，无额外重复项目结构 |
-| AC-16 | 数据驱动 | 新增符合约定的测试订单无需修改业务逻辑；原始题目订单及原始商品 JSON 保持可追溯 |
-
-目前无法用现有 JSON 验证原题两单的完整真实金额。实现应完成缺失数据路径，并用当前商品生成的独立测试订单验证计算路径；未来提供包含原题 SKU 的同结构数据后，应无需修改业务逻辑即可完成原单计算。
-
-## 12. 交付及实施记录要求
-
-最终应用交付包含前后端源码、中文运行说明、依赖清单、安全的环境变量示例和 GitHub 仓库链接。中文 README 至少写明：
-
-1. 项目实现内容、安装与启动步骤、实际服务地址及配置方式。
-2. 订单输入结构、商品 JSON 来源、SKU 匹配方式和当前数据缺口。
-3. 订单号纠错、RRP 含税解释、金额舍入规则和图片占位假设。
-4. 测试环境、已验证的承运商接口、API 失败现象、降级行为及未实现范围。
-5. 运费单位转换、计算 / 装箱假设、费率依据或零运费降级原因。
-6. 新增测试数据的用途、验证结果、题目难点及解决方式。
-
-HTML 另说明可能安排约 10 分钟的中文项目讲解。原材料中的联系信息仅为题目沟通渠道，不属于产品页面功能。
-
-实施时仍需记录的事项：原题 SKU 完整数据何时补齐；重量字段的实际业务含义；Australia Post / StarTrack 追踪接口与凭据的实测结果；可选 TNT 规范及连接有效性。这些事项不阻止先实现页面、数据校验、缺失提示和测试订单计算。
+1. Every generated line matches `db-data.json`; all ten source products are used without changing their prices.
+2. Three test orders and seventeen units appear; customer/order data is labelled as generated.
+3. First test order totals A$668.00 with shipping not estimated; a GROWAFB10 × 2 calculation yields 180.00 subtotal, 18.00 GST and 198.00 total.
+4. Invalid/missing products, quantities and prices create clear incomplete results.
+5. Search, status filters, catalog search, details navigation, export and tracking retry work.
+6. Tracking success and failure are independently displayed per shipment; no live state is invented.
+7. English UI remains usable on desktop and narrow screens, with keyboard focus and accessible labels.
+8. Application secrets stay out of new source files, frontend bundles, API responses and exported orders. The existing repository history already contains credential-bearing reference documents; a public release requires a sanitized repository/export.
+9. `docker compose up --build -d` starts both healthy services and the application is available at `http://localhost:8080`.
+10. README documents startup, fixtures, assumptions, limitations and validation results in English, following the latest language request.

@@ -1,0 +1,145 @@
+{
+  "description": "Generated assessment fixtures. Product records and prices come exclusively from docs/db-data.json. Customers and orders are fictional. Tracking numbers are supplied test identifiers; associations with these orders are synthetic and API responses are testbed results.",
+  "originPostcode": "2111",
+  "orders": [
+    {
+      "orderNo": "TEST-20260923-001",
+      "orderDate": "2026-09-23",
+      "status": "In Transit",
+      "isTestData": true,
+      "customer": {
+        "company": "Evergreen Dispensary",
+        "name": "Alex Morgan",
+        "email": "alex.morgan@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "42 Example Street",
+        "suburb": "Melbourne",
+        "state": "VIC",
+        "postcode": "3000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "WL-PAS-ZSMPIN-30-30-1",
+          "quantity": 2,
+          "trackingId": "Track 1"
+        },
+        {
+          "sku": "NUBKIKP10",
+          "quantity": 1,
+          "trackingId": "Track 1"
+        },
+        {
+          "sku": "GROWAFB10",
+          "quantity": 2,
+          "trackingId": "Track 1"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 1",
+          "trackingNumber": "2FWZ50008569",
+          "carrier": "StarTrack"
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-002",
+      "orderDate": "2026-09-22",
+      "status": "Processing",
+      "isTestData": true,
+      "customer": {
+        "company": "Northside Wellness",
+        "name": "Jamie Taylor",
+        "email": "jamie.taylor@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "18 Sample Road",
+        "suburb": "Fitzroy",
+        "state": "VIC",
+        "postcode": "3065",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "WL-PAS-ZSMPST-30-30-1",
+          "quantity": 1,
+          "trackingId": "Track 2"
+        },
+        {
+          "sku": "GROOGKU10",
+          "quantity": 2,
+          "trackingId": "Track 2"
+        },
+        {
+          "sku": "ENCBGBS30",
+          "quantity": 1,
+          "trackingId": "Track 3"
+        },
+        {
+          "sku": "FLW0013",
+          "quantity": 2,
+          "trackingId": "Track 3"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 2",
+          "trackingNumber": "2FWZ50008645",
+          "carrier": "StarTrack"
+        },
+        {
+          "trackingId": "Track 3",
+          "trackingNumber": "305506914",
+          "carrier": "TNT"
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-003",
+      "orderDate": "2026-09-21",
+      "status": "Completed",
+      "isTestData": true,
+      "customer": {
+        "company": "Greenfield Health",
+        "name": "Sam Parker",
+        "email": "sam.parker@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "76 Example Avenue",
+        "suburb": "Melbourne",
+        "state": "VIC",
+        "postcode": "3000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "GROSTRC10",
+          "quantity": 3,
+          "trackingId": "Track 4"
+        },
+        {
+          "sku": "WLFLO015",
+          "quantity": 1,
+          "trackingId": "Track 4"
+        },
+        {
+          "sku": "FLW0012",
+          "quantity": 2,
+          "trackingId": "Track 4"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 4",
+          "trackingNumber": "RBXZ50016112",
+          "carrier": "StarTrack"
+        }
+      ]
+    }
+  ]
+}

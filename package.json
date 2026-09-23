@@ -1,4 +1,12 @@
 {
   "name": "auspost-app",
-  "verison": "0.0.0"
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "docker compose up --build -d",
+    "stop": "docker compose down",
+    "test": "npm --prefix backend test",
+    "build": "npm --prefix frontend run build",
+    "lint": "npm --prefix frontend run lint"
+  }
 }

@@ -1,6 +1,13 @@
 {
-  "name": "backend",
-  "version": "0.0.0",
+  "name": "auspost-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file-if-exists=../.env app.js",
+    "dev": "node --watch --env-file-if-exists=../.env app.js",
+    "test": "node --test"
+  },
   "dependencies": {
     "express": "^5.2.1"
   }
