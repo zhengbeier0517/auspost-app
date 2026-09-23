@@ -1,6 +1,6 @@
 # ParcelDesk — Product Requirements
 
-Version 2.0 · 23 September 2026
+Version 2.1 · 23 September 2026
 
 ## 1. Scope and source priority
 
@@ -42,7 +42,7 @@ Other source fields remain intact. Never infer shipment weight from the product 
 
 Each order contains `orderNo`, `orderDate`, `status`, `isTestData`, `customer`, `shippingAddress`, `items` and `shipments`. Each line references a real catalog `sku`, a positive integer `quantity` and a `trackingId`. Each shipment contains `trackingId`, `trackingNumber` and `carrier`.
 
-Generated customer names and addresses are fictional. Email addresses use `example.com`. Tracking identifiers are taken from the supplied assessment testing material; their association with generated orders is synthetic. A testbed response is not evidence of a real delivery.
+Generated customer names and addresses are fictional. Email addresses use `example.com`. Tracking identifiers and histories are generated locally. Each shipment has a unique `MOCK-` identifier and a `mockTracking` object containing status and timestamped events. No carrier API is used in default mock mode. All results are explicitly labelled simulated.
 
 | Generated order | Product lines | Units | Order state |
 | --- | ---: | ---: | --- |
@@ -50,7 +50,7 @@ Generated customer names and addresses are fictional. Email addresses use `examp
 | TEST-20260923-002 | 4 | 6 | Processing |
 | TEST-20260923-003 | 3 | 6 | Completed |
 
-Together the fixtures exercise all ten catalog products. Do not duplicate catalog names or prices in the fixture file. Adding another valid order must not require modifying application logic.
+The table above lists the three original fixtures. Twenty additional orders (004–023) bring the total to 23 orders and 30 shipments. Together the fixtures exercise all ten catalog products. Do not duplicate catalog names or prices in the fixture file. Adding another valid order must not require modifying application logic.
 
 ## 3. Required functionality
 
@@ -104,6 +104,11 @@ Origin is `2111`, as specified in the assessment. Destination comes from the gen
 An optional estimate would be calculated once per order/shipment group and summed to the order. A failed or unimplemented TNT estimate must not erase another group's valid estimate.
 
 ## 6. Tracking integration
+
+Default configuration is `TRACKING_MODE=mock`. Return the stored shipment history from `docs/test-data.json` with `environment: "mock"`, `isSimulated: true`, and `queriedAt: null`. Sort events newest first. Missing mock histories must be unavailable rather than fabricated. StarTrack, Australia Post and TNT all have mock histories. Refresh reloads the same fixture. English UI badges and captions must say “Simulated”, not “Testbed” or “live”.
+
+The following remote integration is retained only for optional `TRACKING_MODE=testbed`. Never submit a generated `MOCK-` tracking number to the remote API.
+
 
 Australia Post / StarTrack tracking is requested by the backend only, using the official testbed `/track?tracking_ids=...` endpoint, Basic authentication, and the `Account-Number` header. Credentials reside in root `.env` and are never returned to the client. The official host and testbed path are enforced before sending credentials; redirects are rejected.
 
@@ -171,11 +176,11 @@ Nginx serves the built frontend and proxies `/api/` to the backend. Only the fro
 ## 8. Acceptance
 
 1. Every generated line matches `db-data.json`; all ten source products are used without changing their prices.
-2. Three test orders and seventeen units appear; customer/order data is labelled as generated.
+2. 23 test orders, 227 units and 30 shipments appear; customer/order data and tracking histories are labelled as generated.
 3. First test order totals A$668.00 with shipping not estimated; a GROWAFB10 × 2 calculation yields 180.00 subtotal, 18.00 GST and 198.00 total.
 4. Invalid/missing products, quantities and prices create clear incomplete results.
 5. Search, status filters, catalog search, details navigation, export and tracking retry work.
-6. Tracking success and failure are independently displayed per shipment; no live state is invented.
+6. Mock mode returns all 30 stored shipment histories without API calls, including delayed and delivery-attempted scenarios; no simulated state is presented as live.
 7. English UI remains usable on desktop and narrow screens, with keyboard focus and accessible labels.
 8. Application secrets stay out of new source files, frontend bundles, API responses and exported orders. The existing repository history already contains credential-bearing reference documents; a public release requires a sanitized repository/export.
 9. `docker compose up --build -d` starts both healthy services and the application is available at `http://localhost:8080`.

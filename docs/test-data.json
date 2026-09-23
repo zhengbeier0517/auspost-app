@@ -1,5 +1,5 @@
 {
-  "description": "Generated assessment fixtures. Product records and prices come exclusively from docs/db-data.json. Customers and orders are fictional. Tracking numbers are supplied test identifiers; associations with these orders are synthetic and API responses are testbed results.",
+  "description": "Generated offline assessment fixtures: 23 fictional orders, customers, shipment identifiers and tracking histories. Product details and prices are read only from docs/db-data.json. All event timestamps explicitly use UTC+10; none are live courier results.",
   "originPostcode": "2111",
   "orders": [
     {
@@ -40,8 +40,33 @@
       "shipments": [
         {
           "trackingId": "Track 1",
-          "trackingNumber": "2FWZ50008569",
-          "carrier": "StarTrack"
+          "trackingNumber": "MOCK-STARTRACK-0001-1",
+          "carrier": "StarTrack",
+          "mockTracking": {
+            "status": "In transit",
+            "events": [
+              {
+                "description": "In transit",
+                "location": "Melbourne VIC",
+                "date": "2026-09-23T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Melbourne VIC",
+                "date": "2026-09-23T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-23T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-23T08:00:00+10:00"
+              }
+            ]
+          }
         }
       ]
     },
@@ -88,13 +113,33 @@
       "shipments": [
         {
           "trackingId": "Track 2",
-          "trackingNumber": "2FWZ50008645",
-          "carrier": "StarTrack"
+          "trackingNumber": "MOCK-STARTRACK-0002-1",
+          "carrier": "StarTrack",
+          "mockTracking": {
+            "status": "Shipment information received",
+            "events": [
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-22T08:00:00+10:00"
+              }
+            ]
+          }
         },
         {
           "trackingId": "Track 3",
-          "trackingNumber": "305506914",
-          "carrier": "TNT"
+          "trackingNumber": "MOCK-TNT-0002-2",
+          "carrier": "TNT",
+          "mockTracking": {
+            "status": "Shipment information received",
+            "events": [
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-22T08:00:00+10:00"
+              }
+            ]
+          }
         }
       ]
     },
@@ -136,8 +181,1503 @@
       "shipments": [
         {
           "trackingId": "Track 4",
-          "trackingNumber": "RBXZ50016112",
-          "carrier": "StarTrack"
+          "trackingNumber": "MOCK-STARTRACK-0003-1",
+          "carrier": "StarTrack",
+          "mockTracking": {
+            "status": "Delivered",
+            "events": [
+              {
+                "description": "Delivered",
+                "location": "Melbourne VIC",
+                "date": "2026-09-21T16:00:00+10:00"
+              },
+              {
+                "description": "Out for delivery",
+                "location": "Melbourne VIC",
+                "date": "2026-09-21T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Melbourne VIC",
+                "date": "2026-09-21T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-21T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-21T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-004",
+      "orderDate": "2026-09-20",
+      "status": "In Transit",
+      "isTestData": true,
+      "customer": {
+        "company": "Harbour Test Pharmacy 04",
+        "name": "Casey Brooks",
+        "email": "casey.brooks@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "14 Example Street",
+        "suburb": "Sydney",
+        "state": "NSW",
+        "postcode": "2000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "WL-PAS-ZSMPIN-30-30-1",
+          "quantity": 1,
+          "trackingId": "Track 4A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 4A",
+          "trackingNumber": "MOCK-STARTRACK-0004-1",
+          "carrier": "StarTrack",
+          "mockTracking": {
+            "status": "Out for delivery",
+            "events": [
+              {
+                "description": "Out for delivery",
+                "location": "Sydney NSW",
+                "date": "2026-09-20T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Sydney NSW",
+                "date": "2026-09-20T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-20T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-20T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-005",
+      "orderDate": "2026-09-19",
+      "status": "Processing",
+      "isTestData": true,
+      "customer": {
+        "company": "Coastal Test Pharmacy 05",
+        "name": "Jordan Ellis",
+        "email": "jordan.ellis@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "15 Example Street",
+        "suburb": "Brisbane",
+        "state": "QLD",
+        "postcode": "4000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "WL-PAS-ZSMPST-30-30-1",
+          "quantity": 2,
+          "trackingId": "Track 5A"
+        },
+        {
+          "sku": "GROSTRC10",
+          "quantity": 3,
+          "trackingId": "Track 5A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 5A",
+          "trackingNumber": "MOCK-AUSTRALIAPOST-0005-1",
+          "carrier": "Australia Post",
+          "mockTracking": {
+            "status": "Shipment information received",
+            "events": [
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-19T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-006",
+      "orderDate": "2026-09-18",
+      "status": "Completed",
+      "isTestData": true,
+      "customer": {
+        "company": "Valley Test Pharmacy 06",
+        "name": "Riley Chen",
+        "email": "riley.chen@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "16 Example Street",
+        "suburb": "Adelaide",
+        "state": "SA",
+        "postcode": "5000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "NUBKIKP10",
+          "quantity": 3,
+          "trackingId": "Track 6A"
+        },
+        {
+          "sku": "GROWAFB10",
+          "quantity": 4,
+          "trackingId": "Track 6B"
+        },
+        {
+          "sku": "FLW0013",
+          "quantity": 5,
+          "trackingId": "Track 6A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 6A",
+          "trackingNumber": "MOCK-TNT-0006-1",
+          "carrier": "TNT",
+          "mockTracking": {
+            "status": "Delivered",
+            "events": [
+              {
+                "description": "Delivered",
+                "location": "Adelaide SA",
+                "date": "2026-09-18T16:00:00+10:00"
+              },
+              {
+                "description": "Out for delivery",
+                "location": "Adelaide SA",
+                "date": "2026-09-18T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Adelaide SA",
+                "date": "2026-09-18T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-18T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-18T08:00:00+10:00"
+              }
+            ]
+          }
+        },
+        {
+          "trackingId": "Track 6B",
+          "trackingNumber": "MOCK-TNT-0006-2",
+          "carrier": "TNT",
+          "mockTracking": {
+            "status": "Delivered",
+            "events": [
+              {
+                "description": "Delivered",
+                "location": "Adelaide SA",
+                "date": "2026-09-18T16:00:00+10:00"
+              },
+              {
+                "description": "Out for delivery",
+                "location": "Adelaide SA",
+                "date": "2026-09-18T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Adelaide SA",
+                "date": "2026-09-18T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-18T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-18T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-007",
+      "orderDate": "2026-09-17",
+      "status": "In Transit",
+      "isTestData": true,
+      "customer": {
+        "company": "Riverside Test Pharmacy 07",
+        "name": "Morgan Lane",
+        "email": "morgan.lane@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "17 Example Street",
+        "suburb": "Perth",
+        "state": "WA",
+        "postcode": "6000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "GROOGKU10",
+          "quantity": 4,
+          "trackingId": "Track 7A"
+        },
+        {
+          "sku": "WLFLO015",
+          "quantity": 5,
+          "trackingId": "Track 7A"
+        },
+        {
+          "sku": "FLW0012",
+          "quantity": 6,
+          "trackingId": "Track 7A"
+        },
+        {
+          "sku": "NUBKIKP10",
+          "quantity": 1,
+          "trackingId": "Track 7A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 7A",
+          "trackingNumber": "MOCK-STARTRACK-0007-1",
+          "carrier": "StarTrack",
+          "mockTracking": {
+            "status": "Delayed",
+            "events": [
+              {
+                "description": "Delayed",
+                "location": "Perth WA",
+                "date": "2026-09-17T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Perth WA",
+                "date": "2026-09-17T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-17T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-17T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-008",
+      "orderDate": "2026-09-16",
+      "status": "Processing",
+      "isTestData": true,
+      "customer": {
+        "company": "Summit Test Pharmacy 08",
+        "name": "Taylor Reed",
+        "email": "taylor.reed@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "18 Example Street",
+        "suburb": "Hobart",
+        "state": "TAS",
+        "postcode": "7000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "GROSTRC10",
+          "quantity": 5,
+          "trackingId": "Track 8A"
+        },
+        {
+          "sku": "ENCBGBS30",
+          "quantity": 6,
+          "trackingId": "Track 8B"
+        },
+        {
+          "sku": "WL-PAS-ZSMPIN-30-30-1",
+          "quantity": 1,
+          "trackingId": "Track 8A"
+        },
+        {
+          "sku": "GROOGKU10",
+          "quantity": 2,
+          "trackingId": "Track 8B"
+        },
+        {
+          "sku": "WLFLO015",
+          "quantity": 3,
+          "trackingId": "Track 8A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 8A",
+          "trackingNumber": "MOCK-AUSTRALIAPOST-0008-1",
+          "carrier": "Australia Post",
+          "mockTracking": {
+            "status": "Shipment information received",
+            "events": [
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-16T08:00:00+10:00"
+              }
+            ]
+          }
+        },
+        {
+          "trackingId": "Track 8B",
+          "trackingNumber": "MOCK-TNT-0008-2",
+          "carrier": "TNT",
+          "mockTracking": {
+            "status": "Shipment information received",
+            "events": [
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-16T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-009",
+      "orderDate": "2026-09-15",
+      "status": "Completed",
+      "isTestData": true,
+      "customer": {
+        "company": "Harbour Test Pharmacy 09",
+        "name": "Avery Blake",
+        "email": "avery.blake@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "19 Example Street",
+        "suburb": "Canberra",
+        "state": "ACT",
+        "postcode": "2600",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "GROWAFB10",
+          "quantity": 6,
+          "trackingId": "Track 9A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 9A",
+          "trackingNumber": "MOCK-TNT-0009-1",
+          "carrier": "TNT",
+          "mockTracking": {
+            "status": "Delivered",
+            "events": [
+              {
+                "description": "Delivered",
+                "location": "Canberra ACT",
+                "date": "2026-09-15T16:00:00+10:00"
+              },
+              {
+                "description": "Out for delivery",
+                "location": "Canberra ACT",
+                "date": "2026-09-15T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Canberra ACT",
+                "date": "2026-09-15T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-15T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-15T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-010",
+      "orderDate": "2026-09-14",
+      "status": "In Transit",
+      "isTestData": true,
+      "customer": {
+        "company": "Coastal Test Pharmacy 10",
+        "name": "Charlie Quinn",
+        "email": "charlie.quinn@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "20 Example Street",
+        "suburb": "Darwin",
+        "state": "NT",
+        "postcode": "0800",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "WLFLO015",
+          "quantity": 1,
+          "trackingId": "Track 10A"
+        },
+        {
+          "sku": "FLW0012",
+          "quantity": 2,
+          "trackingId": "Track 10A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 10A",
+          "trackingNumber": "MOCK-STARTRACK-0010-1",
+          "carrier": "StarTrack",
+          "mockTracking": {
+            "status": "Delivery attempted",
+            "events": [
+              {
+                "description": "Delivery attempted",
+                "location": "Darwin NT",
+                "date": "2026-09-14T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Darwin NT",
+                "date": "2026-09-14T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-14T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-14T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-011",
+      "orderDate": "2026-09-13",
+      "status": "Processing",
+      "isTestData": true,
+      "customer": {
+        "company": "Valley Test Pharmacy 11",
+        "name": "Peyton James",
+        "email": "peyton.james@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "21 Example Street",
+        "suburb": "Melbourne",
+        "state": "VIC",
+        "postcode": "3000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "ENCBGBS30",
+          "quantity": 2,
+          "trackingId": "Track 11A"
+        },
+        {
+          "sku": "WL-PAS-ZSMPIN-30-30-1",
+          "quantity": 3,
+          "trackingId": "Track 11A"
+        },
+        {
+          "sku": "GROOGKU10",
+          "quantity": 4,
+          "trackingId": "Track 11A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 11A",
+          "trackingNumber": "MOCK-AUSTRALIAPOST-0011-1",
+          "carrier": "Australia Post",
+          "mockTracking": {
+            "status": "Shipment information received",
+            "events": [
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-13T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-012",
+      "orderDate": "2026-09-12",
+      "status": "Completed",
+      "isTestData": true,
+      "customer": {
+        "company": "Riverside Test Pharmacy 12",
+        "name": "Harper Wells",
+        "email": "harper.wells@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "22 Example Street",
+        "suburb": "Sydney",
+        "state": "NSW",
+        "postcode": "2000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "FLW0013",
+          "quantity": 3,
+          "trackingId": "Track 12A"
+        },
+        {
+          "sku": "WL-PAS-ZSMPST-30-30-1",
+          "quantity": 4,
+          "trackingId": "Track 12B"
+        },
+        {
+          "sku": "GROSTRC10",
+          "quantity": 5,
+          "trackingId": "Track 12A"
+        },
+        {
+          "sku": "ENCBGBS30",
+          "quantity": 6,
+          "trackingId": "Track 12B"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 12A",
+          "trackingNumber": "MOCK-TNT-0012-1",
+          "carrier": "TNT",
+          "mockTracking": {
+            "status": "Delivered",
+            "events": [
+              {
+                "description": "Delivered",
+                "location": "Sydney NSW",
+                "date": "2026-09-12T16:00:00+10:00"
+              },
+              {
+                "description": "Out for delivery",
+                "location": "Sydney NSW",
+                "date": "2026-09-12T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Sydney NSW",
+                "date": "2026-09-12T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-12T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-12T08:00:00+10:00"
+              }
+            ]
+          }
+        },
+        {
+          "trackingId": "Track 12B",
+          "trackingNumber": "MOCK-TNT-0012-2",
+          "carrier": "TNT",
+          "mockTracking": {
+            "status": "Delivered",
+            "events": [
+              {
+                "description": "Delivered",
+                "location": "Sydney NSW",
+                "date": "2026-09-12T16:00:00+10:00"
+              },
+              {
+                "description": "Out for delivery",
+                "location": "Sydney NSW",
+                "date": "2026-09-12T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Sydney NSW",
+                "date": "2026-09-12T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-12T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-12T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-013",
+      "orderDate": "2026-09-11",
+      "status": "In Transit",
+      "isTestData": true,
+      "customer": {
+        "company": "Summit Test Pharmacy 13",
+        "name": "Cameron Lee",
+        "email": "cameron.lee@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "23 Example Street",
+        "suburb": "Brisbane",
+        "state": "QLD",
+        "postcode": "4000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "FLW0012",
+          "quantity": 4,
+          "trackingId": "Track 13A"
+        },
+        {
+          "sku": "NUBKIKP10",
+          "quantity": 5,
+          "trackingId": "Track 13A"
+        },
+        {
+          "sku": "GROWAFB10",
+          "quantity": 6,
+          "trackingId": "Track 13A"
+        },
+        {
+          "sku": "FLW0013",
+          "quantity": 1,
+          "trackingId": "Track 13A"
+        },
+        {
+          "sku": "WL-PAS-ZSMPST-30-30-1",
+          "quantity": 2,
+          "trackingId": "Track 13A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 13A",
+          "trackingNumber": "MOCK-STARTRACK-0013-1",
+          "carrier": "StarTrack",
+          "mockTracking": {
+            "status": "In transit",
+            "events": [
+              {
+                "description": "In transit",
+                "location": "Brisbane QLD",
+                "date": "2026-09-11T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Brisbane QLD",
+                "date": "2026-09-11T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-11T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-11T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-014",
+      "orderDate": "2026-09-10",
+      "status": "Processing",
+      "isTestData": true,
+      "customer": {
+        "company": "Harbour Test Pharmacy 14",
+        "name": "Drew Bennett",
+        "email": "drew.bennett@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "24 Example Street",
+        "suburb": "Adelaide",
+        "state": "SA",
+        "postcode": "5000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "WL-PAS-ZSMPIN-30-30-1",
+          "quantity": 5,
+          "trackingId": "Track 14A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 14A",
+          "trackingNumber": "MOCK-AUSTRALIAPOST-0014-1",
+          "carrier": "Australia Post",
+          "mockTracking": {
+            "status": "Shipment information received",
+            "events": [
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-10T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-015",
+      "orderDate": "2026-09-09",
+      "status": "Completed",
+      "isTestData": true,
+      "customer": {
+        "company": "Coastal Test Pharmacy 15",
+        "name": "Reese Carter",
+        "email": "reese.carter@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "25 Example Street",
+        "suburb": "Perth",
+        "state": "WA",
+        "postcode": "6000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "WL-PAS-ZSMPST-30-30-1",
+          "quantity": 6,
+          "trackingId": "Track 15A"
+        },
+        {
+          "sku": "GROSTRC10",
+          "quantity": 1,
+          "trackingId": "Track 15A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 15A",
+          "trackingNumber": "MOCK-TNT-0015-1",
+          "carrier": "TNT",
+          "mockTracking": {
+            "status": "Delivered",
+            "events": [
+              {
+                "description": "Delivered",
+                "location": "Perth WA",
+                "date": "2026-09-09T16:00:00+10:00"
+              },
+              {
+                "description": "Out for delivery",
+                "location": "Perth WA",
+                "date": "2026-09-09T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Perth WA",
+                "date": "2026-09-09T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-09T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-09T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-016",
+      "orderDate": "2026-09-08",
+      "status": "In Transit",
+      "isTestData": true,
+      "customer": {
+        "company": "Valley Test Pharmacy 16",
+        "name": "Skyler Davis",
+        "email": "skyler.davis@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "26 Example Street",
+        "suburb": "Hobart",
+        "state": "TAS",
+        "postcode": "7000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "NUBKIKP10",
+          "quantity": 1,
+          "trackingId": "Track 16A"
+        },
+        {
+          "sku": "GROWAFB10",
+          "quantity": 2,
+          "trackingId": "Track 16B"
+        },
+        {
+          "sku": "FLW0013",
+          "quantity": 3,
+          "trackingId": "Track 16A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 16A",
+          "trackingNumber": "MOCK-STARTRACK-0016-1",
+          "carrier": "StarTrack",
+          "mockTracking": {
+            "status": "Out for delivery",
+            "events": [
+              {
+                "description": "Out for delivery",
+                "location": "Hobart TAS",
+                "date": "2026-09-08T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Hobart TAS",
+                "date": "2026-09-08T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-08T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-08T08:00:00+10:00"
+              }
+            ]
+          }
+        },
+        {
+          "trackingId": "Track 16B",
+          "trackingNumber": "MOCK-TNT-0016-2",
+          "carrier": "TNT",
+          "mockTracking": {
+            "status": "Delayed",
+            "events": [
+              {
+                "description": "Delayed",
+                "location": "Hobart TAS",
+                "date": "2026-09-08T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Hobart TAS",
+                "date": "2026-09-08T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-08T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-08T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-017",
+      "orderDate": "2026-09-07",
+      "status": "Processing",
+      "isTestData": true,
+      "customer": {
+        "company": "Riverside Test Pharmacy 17",
+        "name": "Finley Adams",
+        "email": "finley.adams@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "27 Example Street",
+        "suburb": "Canberra",
+        "state": "ACT",
+        "postcode": "2600",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "GROOGKU10",
+          "quantity": 2,
+          "trackingId": "Track 17A"
+        },
+        {
+          "sku": "WLFLO015",
+          "quantity": 3,
+          "trackingId": "Track 17A"
+        },
+        {
+          "sku": "FLW0012",
+          "quantity": 4,
+          "trackingId": "Track 17A"
+        },
+        {
+          "sku": "NUBKIKP10",
+          "quantity": 5,
+          "trackingId": "Track 17A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 17A",
+          "trackingNumber": "MOCK-AUSTRALIAPOST-0017-1",
+          "carrier": "Australia Post",
+          "mockTracking": {
+            "status": "Shipment information received",
+            "events": [
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-07T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-018",
+      "orderDate": "2026-09-06",
+      "status": "Completed",
+      "isTestData": true,
+      "customer": {
+        "company": "Summit Test Pharmacy 18",
+        "name": "Robin Shaw",
+        "email": "robin.shaw@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "28 Example Street",
+        "suburb": "Darwin",
+        "state": "NT",
+        "postcode": "0800",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "GROSTRC10",
+          "quantity": 3,
+          "trackingId": "Track 18A"
+        },
+        {
+          "sku": "ENCBGBS30",
+          "quantity": 4,
+          "trackingId": "Track 18B"
+        },
+        {
+          "sku": "WL-PAS-ZSMPIN-30-30-1",
+          "quantity": 5,
+          "trackingId": "Track 18A"
+        },
+        {
+          "sku": "GROOGKU10",
+          "quantity": 6,
+          "trackingId": "Track 18B"
+        },
+        {
+          "sku": "WLFLO015",
+          "quantity": 1,
+          "trackingId": "Track 18A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 18A",
+          "trackingNumber": "MOCK-TNT-0018-1",
+          "carrier": "TNT",
+          "mockTracking": {
+            "status": "Delivered",
+            "events": [
+              {
+                "description": "Delivered",
+                "location": "Darwin NT",
+                "date": "2026-09-06T16:00:00+10:00"
+              },
+              {
+                "description": "Out for delivery",
+                "location": "Darwin NT",
+                "date": "2026-09-06T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Darwin NT",
+                "date": "2026-09-06T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-06T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-06T08:00:00+10:00"
+              }
+            ]
+          }
+        },
+        {
+          "trackingId": "Track 18B",
+          "trackingNumber": "MOCK-TNT-0018-2",
+          "carrier": "TNT",
+          "mockTracking": {
+            "status": "Delivered",
+            "events": [
+              {
+                "description": "Delivered",
+                "location": "Darwin NT",
+                "date": "2026-09-06T16:00:00+10:00"
+              },
+              {
+                "description": "Out for delivery",
+                "location": "Darwin NT",
+                "date": "2026-09-06T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Darwin NT",
+                "date": "2026-09-06T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-06T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-06T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-019",
+      "orderDate": "2026-09-05",
+      "status": "In Transit",
+      "isTestData": true,
+      "customer": {
+        "company": "Harbour Test Pharmacy 19",
+        "name": "Hayden Clarke",
+        "email": "hayden.clarke@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "29 Example Street",
+        "suburb": "Melbourne",
+        "state": "VIC",
+        "postcode": "3000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "GROWAFB10",
+          "quantity": 4,
+          "trackingId": "Track 19A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 19A",
+          "trackingNumber": "MOCK-STARTRACK-0019-1",
+          "carrier": "StarTrack",
+          "mockTracking": {
+            "status": "Delayed",
+            "events": [
+              {
+                "description": "Delayed",
+                "location": "Melbourne VIC",
+                "date": "2026-09-05T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Melbourne VIC",
+                "date": "2026-09-05T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-05T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-05T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-020",
+      "orderDate": "2026-09-04",
+      "status": "Processing",
+      "isTestData": true,
+      "customer": {
+        "company": "Coastal Test Pharmacy 20",
+        "name": "Sage Miller",
+        "email": "sage.miller@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "30 Example Street",
+        "suburb": "Sydney",
+        "state": "NSW",
+        "postcode": "2000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "WLFLO015",
+          "quantity": 5,
+          "trackingId": "Track 20A"
+        },
+        {
+          "sku": "FLW0012",
+          "quantity": 6,
+          "trackingId": "Track 20A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 20A",
+          "trackingNumber": "MOCK-AUSTRALIAPOST-0020-1",
+          "carrier": "Australia Post",
+          "mockTracking": {
+            "status": "Shipment information received",
+            "events": [
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-04T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-021",
+      "orderDate": "2026-09-03",
+      "status": "Completed",
+      "isTestData": true,
+      "customer": {
+        "company": "Valley Test Pharmacy 21",
+        "name": "Rowan Kelly",
+        "email": "rowan.kelly@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "31 Example Street",
+        "suburb": "Brisbane",
+        "state": "QLD",
+        "postcode": "4000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "ENCBGBS30",
+          "quantity": 6,
+          "trackingId": "Track 21A"
+        },
+        {
+          "sku": "WL-PAS-ZSMPIN-30-30-1",
+          "quantity": 1,
+          "trackingId": "Track 21A"
+        },
+        {
+          "sku": "GROOGKU10",
+          "quantity": 2,
+          "trackingId": "Track 21A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 21A",
+          "trackingNumber": "MOCK-TNT-0021-1",
+          "carrier": "TNT",
+          "mockTracking": {
+            "status": "Delivered",
+            "events": [
+              {
+                "description": "Delivered",
+                "location": "Brisbane QLD",
+                "date": "2026-09-03T16:00:00+10:00"
+              },
+              {
+                "description": "Out for delivery",
+                "location": "Brisbane QLD",
+                "date": "2026-09-03T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Brisbane QLD",
+                "date": "2026-09-03T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-03T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-03T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-022",
+      "orderDate": "2026-09-02",
+      "status": "In Transit",
+      "isTestData": true,
+      "customer": {
+        "company": "Riverside Test Pharmacy 22",
+        "name": "Emerson Hall",
+        "email": "emerson.hall@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "32 Example Street",
+        "suburb": "Adelaide",
+        "state": "SA",
+        "postcode": "5000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "FLW0013",
+          "quantity": 1,
+          "trackingId": "Track 22A"
+        },
+        {
+          "sku": "WL-PAS-ZSMPST-30-30-1",
+          "quantity": 2,
+          "trackingId": "Track 22B"
+        },
+        {
+          "sku": "GROSTRC10",
+          "quantity": 3,
+          "trackingId": "Track 22A"
+        },
+        {
+          "sku": "ENCBGBS30",
+          "quantity": 4,
+          "trackingId": "Track 22B"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 22A",
+          "trackingNumber": "MOCK-STARTRACK-0022-1",
+          "carrier": "StarTrack",
+          "mockTracking": {
+            "status": "Delivery attempted",
+            "events": [
+              {
+                "description": "Delivery attempted",
+                "location": "Adelaide SA",
+                "date": "2026-09-02T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Adelaide SA",
+                "date": "2026-09-02T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-02T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-02T08:00:00+10:00"
+              }
+            ]
+          }
+        },
+        {
+          "trackingId": "Track 22B",
+          "trackingNumber": "MOCK-TNT-0022-2",
+          "carrier": "TNT",
+          "mockTracking": {
+            "status": "In transit",
+            "events": [
+              {
+                "description": "In transit",
+                "location": "Adelaide SA",
+                "date": "2026-09-02T14:00:00+10:00"
+              },
+              {
+                "description": "Processed at facility",
+                "location": "Adelaide SA",
+                "date": "2026-09-02T12:00:00+10:00"
+              },
+              {
+                "description": "Collected from sender",
+                "location": "Ryde NSW",
+                "date": "2026-09-02T10:00:00+10:00"
+              },
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-02T08:00:00+10:00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderNo": "TEST-20260923-023",
+      "orderDate": "2026-09-01",
+      "status": "Processing",
+      "isTestData": true,
+      "customer": {
+        "company": "Summit Test Pharmacy 23",
+        "name": "Dakota Hayes",
+        "email": "dakota.hayes@example.com",
+        "phone": "0400 000 000"
+      },
+      "shippingAddress": {
+        "line1": "33 Example Street",
+        "suburb": "Perth",
+        "state": "WA",
+        "postcode": "6000",
+        "country": "AU"
+      },
+      "items": [
+        {
+          "sku": "FLW0012",
+          "quantity": 2,
+          "trackingId": "Track 23A"
+        },
+        {
+          "sku": "NUBKIKP10",
+          "quantity": 3,
+          "trackingId": "Track 23A"
+        },
+        {
+          "sku": "GROWAFB10",
+          "quantity": 4,
+          "trackingId": "Track 23A"
+        },
+        {
+          "sku": "FLW0013",
+          "quantity": 5,
+          "trackingId": "Track 23A"
+        },
+        {
+          "sku": "WL-PAS-ZSMPST-30-30-1",
+          "quantity": 6,
+          "trackingId": "Track 23A"
+        }
+      ],
+      "shipments": [
+        {
+          "trackingId": "Track 23A",
+          "trackingNumber": "MOCK-AUSTRALIAPOST-0023-1",
+          "carrier": "Australia Post",
+          "mockTracking": {
+            "status": "Shipment information received",
+            "events": [
+              {
+                "description": "Shipment information received",
+                "location": "Ryde NSW",
+                "date": "2026-09-01T08:00:00+10:00"
+              }
+            ]
+          }
         }
       ]
     }

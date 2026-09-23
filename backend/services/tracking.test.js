@@ -51,3 +51,11 @@ test('limits outbound requests to ten per minute', async () => {
   for (let i = 0; i < 11; i++) await track({ ...shipment, trackingNumber: String(i) });
   assert.equal(calls, 10);
 });
+
+test('generated identifiers are never sent to the courier even in testbed mode', async () => {
+  let calls = 0;
+  const track = createTrackingService({ env, fetchImpl: async () => { calls++; } });
+  const result = await track({ ...shipment, trackingNumber: 'MOCK-ST-0001' });
+  assert.equal(result.availability, 'unavailable');
+  assert.equal(calls, 0);
+});

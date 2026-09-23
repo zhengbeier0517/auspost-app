@@ -15,6 +15,7 @@ export function createTrackingService({ env = process.env, fetchImpl = fetch, no
   let calls = [];
   async function request(shipment) {
     const base = { ...shipment, environment: 'testbed', availability: 'unavailable', status: null, lastUpdated: null, events: [], queriedAt: null };
+    if (shipment.trackingNumber.startsWith('MOCK-')) return { ...base, message: 'This is a generated tracking identifier. Use mock mode to view its simulated history.' };
     if (shipment.carrier === 'TNT') return { ...base, availability: 'not_implemented', message: 'TNT tracking is not implemented. Shipping is not estimated.' };
     if (!['StarTrack', 'Australia Post'].includes(shipment.carrier)) return { ...base, availability: 'not_implemented', message: 'This carrier is not supported.' };
     const account = shipment.carrier === 'StarTrack' ? env.STARTRACK_ACCOUNT_NUMBER : env.AUSPOST_ACCOUNT_NUMBER;

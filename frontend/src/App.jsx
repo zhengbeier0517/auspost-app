@@ -36,7 +36,7 @@ export default function App() {
         <button className={view === 'orders' ? 'nav-item active' : 'nav-item'} onClick={() => navigate('orders')}><Icon name="box"/>Orders<span className="nav-count">{orders.length}</span></button>
         <button className={view === 'catalog' ? 'nav-item active' : 'nav-item'} onClick={() => navigate('catalog')}><Icon name="grid"/>Product catalog</button>
       </nav>
-      <div className="sidebar-bottom"><div className="environment"><span className="workspace-dot"/> Test environment<small>Sample orders · Testbed tracking</small></div><div className="profile"><span className="avatar">AH</span><div>Aeris Health<small>Operations workspace</small></div></div></div>
+      <div className="sidebar-bottom"><div className="environment"><span className="workspace-dot"/> Test environment<small>Sample orders · {orders[0]?.trackingMode === 'testbed' ? 'Testbed tracking' : 'Simulated tracking'}</small></div><div className="profile"><span className="avatar">AH</span><div>Aeris Health<small>Operations workspace</small></div></div></div>
     </aside>
     <div className="main-shell">
       <header className="topbar"><div className="breadcrumbs">Workspace <Icon name="arrow" size={13}/><button onClick={() => navigate(view)}>{view === 'catalog' ? 'Product catalog' : 'Orders'}</button>{active && <><Icon name="arrow" size={13}/><span>Order details</span></>}</div><span className="region"><span className="green-dot"/> Australia <span className="region-divider">/</span> AUD</span></header>
